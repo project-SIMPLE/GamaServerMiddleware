@@ -152,11 +152,19 @@ useEffect(() => {
 
   // Handler for removing players
   const handleRemove = (id: string) => {
-    if (ws !== null) {
-      console.log(`ID headset ${id}`);
-      ws.send(JSON.stringify({ "type": "remove_player_headset", id }));
-     // removePlayer(id);  // already did in WebSocketManagers
-     togglePopUpshowPopUpManageHeadset();
+    if (ws !== null) { // verify connect to websocket 
+      console.log(`ID headset ${id}`); // for debugging
+      
+      //send message to remove player 
+      ws.send(JSON.stringify({ "type": "remove_player_headset", id })); 
+      
+      // disconnect player properly
+      // disconnectPlayerProperly(id);
+
+
+      // i would like to send this message to player-server
+      // ws.send(JSON.stringify({ "type": "disconnect_properly" })); // send message to remove player
+      togglePopUpshowPopUpManageHeadset();
     } else {
       console.error('WebSocket is not connected');
     }
@@ -194,8 +202,8 @@ useEffect(() => {
             <div className="flex justify-center mt-8 space-x-4 mb-7">
               
               {/*Display Headset Connected */}
-              {Object.keys(playerList).map((key) => {
-                const player = playerList[key];
+              {Object.keys(playerList).map((key) => { 
+                const player = playerList[key]; // key is the id of the player 
                 return (
                   <div key={key} className="flex flex-col items-center">
                     
@@ -226,7 +234,7 @@ useEffect(() => {
 
                               <button
                                 className="bg-orange-500 text-white px-4 py-2 mt-4 rounded"
-                                onClick={() => handleRestart(key)}
+                                // onClick={() => handleRestart(key)}
                               >
                                  {t('relaunch')}
                               </button>
@@ -258,7 +266,6 @@ useEffect(() => {
                         
                               } 
                           onClick={togglePopUpshowPopUpManageHeadset}
-                          // onClick={() => handleRemove(key)}
                       >
 
                       </Button>

@@ -56,13 +56,40 @@ class ModelManager {
     
     getListPlayers() {
         if (this.models.length > 0) {
-            console.log("this.models : ",this.models);
+            // console.log("this.models : ",this.models);
             const players = this.models[0].getAllPlayers();  // Appelle getAllPlayers() sur la première instance de Model
-            console.log("MODEL MANAGER, les playeurs :",players);
+            console.log("Les playeurs :",players);
             return players;
         } else {
             console.log('No models available.');
             return null;
+        }
+    }
+
+    /**
+         * Removes a player from the list by ID
+         * @param {String} playerId - The ID of the player to be removed
+         */
+    removePlayerById(playerId) {
+        if (this.models.length > 0) {
+            const model = this.models[0];
+
+            console.log("MODEL : ",model);
+            // console.log("model.getAllPlayers() : ",model.getAllPlayers());
+
+            const players = model.getAllPlayers();
+
+            //Verify if ID player exist in "players" object
+            if (players.hasOwnProperty(playerId)) {
+                delete players[playerId]; // delete the player from the object
+                console.log(`Player with ID ${playerId} has been removed.`);
+                // update list of player in model 
+                model.setPlayers(players);
+            } else {
+                console.log(`Player with ID ${playerId} not found.`);
+            }
+        } else {
+            console.log('No models available to remove players from.');
         }
     }
 

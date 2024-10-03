@@ -27,6 +27,7 @@ class PlayerServer {
             ws.on('message', (message) => {
                 try {
                     const jsonPlayer = JSON.parse(message);
+                    // console.log("Json player: ",jsonPlayer);
                     const type = jsonPlayer['type'];
                     if (useVerbose) {
                         console.log("Reception of this following message from the player " + this.getIdClient(ws));
@@ -43,12 +44,22 @@ class PlayerServer {
                                 "id": jsonPlayer.id
                             }));
                             break;
+                        
+                        // message send from a player : 3 attributs =: type, id, set_heart_beat
+
+                        // we got here two list of players playerSocketClientsID and playerSocketClients
+                        // playerSocketClientsID is the list of the id of the players
+                        // playerSocketClients is the list of the websocket of the players
+                        // we need to keep the two list in sync
+
+
 
                         case "connection":
                             // Reconnection of the headset
                             if (model.getPlayerState(jsonPlayer.id) !== undefined) {
                                 const index = this.playerSocketClientsId.indexOf(jsonPlayer.id)
                                 this.playerSocketClients[index] = ws
+                                
                                 model.setPlayerConnection(jsonPlayer.id, true)
                                 console.log('-> Reconnection of the player of id '+jsonPlayer.id);
                             }
@@ -74,7 +85,11 @@ class PlayerServer {
                             break;
 
                         case "disconnect_properly":
-                            this.controller.removeInGamePlayer(this.getIdClient(ws));
+                            jsonPlayer["idPlayer"];
+                            this.controller.removeInGamePlayer(jsonPlayer["idPlayer"]);
+
+                            // this.controller.removeInGamePlayer(this.getIdClient(ws));
+
                             ws.close();
                             break;
 

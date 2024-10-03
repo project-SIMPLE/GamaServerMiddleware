@@ -330,32 +330,40 @@ class GamaConnector {
         continue_sending = true;
         function_to_call = () => {
             console.log("-> The Player "+idPlayer+" has been added to Gama");
+            
+            // add the new player to the list of players
+            this.model.insertPlayer(idPlayer)
+            this.model.setPlayerConnection(idPlayer, true)
+
+            // add the gamer on Gama -> Unity ? 
             this.model.setPlayerInGame(idPlayer, true)
         }
         this.sendMessages()
     }
 
     /**
-     * Asks Gama to remove a plyer in the simulation
+     * Asks Gama to remove a player in the simulation
      * @param {String} idPlayer - The id of the player
      * @returns 
      */
     removeInGamePlayer(idPlayer) {
-        console.log("Start removing player from game: " + idPlayer);
         
-        // Vérifier si la simulation est en cours
+        // if the simulation is not running
         if (['NONE', "NOTREADY"].includes(this.model.getGama().experiment_state)) {
             console.log("Gama Simulation is not running, cannot remove player");
             return;
         }
         
-        // Vérifier si le joueur est déjà hors jeu
+        // Verify if the player is already out of the game
         const playerState = this.model.getPlayerState(idPlayer);
         if (playerState !== undefined && !playerState.in_game) {
             console.log("Player " + idPlayer + " is already out of the game");
             return;
         }
-        // Cas normal
+        
+        // Normal case
+        console.log("Start removing player from game: " + idPlayer);
+
         current_id_player = idPlayer;
         list_messages = [this.jsonTogglePlayer("remove")];
         index_messages = 0;

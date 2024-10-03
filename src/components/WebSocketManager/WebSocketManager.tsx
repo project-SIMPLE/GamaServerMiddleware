@@ -129,6 +129,11 @@ const WebSocketManager: React.FC<WebSocketManagerProps> = ({ children }) => {
                     case 'get_simulation_by_index':
                         setSelectedSimulation(data.simulation);
                         break;
+                    
+                    // From input
+                    case 'get_simulation_from_input':
+                        setSelectedSimulation(data.simulation);                        
+                        break;
                     case 'remove_player_headset':
                         // console.log("playerList Before remove", playerList); // should show list of players 
                         removePlayer(data.id);

@@ -52,6 +52,10 @@ class Controller {
         return this.modelManager.getListPlayers();
     }
 
+    removePlayerById(id){
+        this.modelManager.removePlayerById(id);
+    }
+
     /**
      * Sends to the monitor the updated json_state
      */

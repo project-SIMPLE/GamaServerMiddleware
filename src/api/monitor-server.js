@@ -59,10 +59,42 @@ class MonitorServer {
                             this.controller.addInGamePlayer(jsonMonitor["id"]);
                             break;
                         case "remove_player_headset":
+                            
+                            //  Should combine the two following versions : one using the controller 
+                            // to delete the player from player server 
+                        
                             // remove the player from the simulation
                             this.controller.removeInGamePlayer(jsonMonitor["id"]);
+                           
+                            
+                            // Nettoyer la liste des joueurs
+                            // maybe not remove from p
+                            this.controller.removePlayerById(jsonMonitor["id"]);
+                            console.log("players after delete :", this.controller.getPlayerList());
+                            
+                            // New : 
+                             // Send message to Player-server for close web socket connection 
+                            // Why we ask to delete the ws ? 
+                             // const playerWs = this.controller.playerServer.getWsClient(jsonMonitor["id"]);
+                            // if (playerWs) {
+                            //     playerWs.send(JSON.stringify({ type: 'disconnect' }));
+                            //     playerWs.close();
+                            // }
+
+                            // Notifier le moniteur
+                            socket.send(JSON.stringify({ 
+                                type: "remove_player_headset", 
+                                id: jsonMonitor["id"], 
+                                player: this.controller.getPlayerList() // Mettre à jour la liste des joueurs dans l'interface Web
+                            }));
+                           
+                            // Before 
+                            // also remove player from PlayerList
+                            // this.controller.removePlayerById(jsonMonitor["id"]);
+                            // // display players after delete
+                            // console.log("players after delete :", this.controller.getPlayerList());
+
                             // Send message to socket Manager 
-                            console.log("les joueurs après delete ::: ",this.controller.getPlayerList());
                             socket.send(JSON.stringify({ 
                                 type: "remove_player_headset", 
                                 id: jsonMonitor["id"], 

@@ -110,10 +110,38 @@ class Model {
         this.controller.notifyMonitor()
     }
 
+    // insert player event if not exist in the list 
+    // setPlayerInGame(idPlayer, inGame) {
+    //     if (!this.jsonPlayers[idPlayer]) {
+    //         // Add player if not exist in the list
+    //         this.insertPlayer(idPlayer);
+    //         console.log(`Le joueur avec l'ID ${idPlayer} n'existait pas. Il a été ajouté.`);
+    //     }
+        
+    //     this.jsonPlayers[idPlayer].in_game = inGame;
+    //     this.controller.notifyPlayerChange(idPlayer, this.jsonPlayers[idPlayer]);
+    //     this.controller.notifyMonitor();
+    // }
+
+
+
+    // Old version with error 
+    // verify if the player exist in the list
+    // error if not exist , should add it first in the list : JsonPlayers 
     setPlayerInGame(idPlayer, inGame) {
-        this.jsonPlayers[idPlayer].in_game = inGame
-        this.controller.notifyPlayerChange(idPlayer, this.jsonPlayers[idPlayer])
-        this.controller.notifyMonitor()
+        if (this.jsonPlayers[idPlayer]){
+            this.jsonPlayers[idPlayer].in_game = inGame
+            this.controller.notifyPlayerChange(idPlayer, this.jsonPlayers[idPlayer])
+            this.controller.notifyMonitor()
+        }
+        else {
+            console.error(`Le joueur avec l'ID ${idPlayer} n'existe pas dans la liste des joueurs.`);
+        }
+    }
+    
+    setPlayers(players) {
+        this.jsonPlayers = players;
+        this.controller.notifyMonitor(); 
     }
 
     setRemoveInGameEveryPlayers() {
