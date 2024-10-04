@@ -1,14 +1,8 @@
-// const fs = require('fs');
-// const path = require('path');
-
-// const Model = require('./model.js');
-// const {useVerbose} = require("../index");
 
 import fs from 'fs';
 import path from 'path';
 import Model from './model.js';
 import { useVerbose } from './index.js';
-
 
 class ModelManager {
 
@@ -20,7 +14,6 @@ class ModelManager {
     constructor(controller) {
         this.controller = controller;
         this.models = this.initModelsList();
-        // console.log("cocuocu"+JSON.stringify(this.models)+"cocuocu");
     }
 
     initModelsList() {
@@ -34,6 +27,7 @@ class ModelManager {
             const folderPath = path.join(packageRootDir, file);
             const stat = fs.statSync(folderPath);
 
+            // find in those learning packages the settings.json 
             if (stat && stat.isDirectory()) {
                 // Verify has a settings file, or it's noise
                 if (fs.existsSync(path.join(folderPath,"settings.json"))){

@@ -184,13 +184,15 @@ const SelectorSimulations = () => {
         <div className="mt-4 w-full" style={{ marginTop: '20px', marginBottom: '-25px' }} >
           
           <h1 className="text-lg font-bold mb-4"> {t('enter_path')} </h1> 
+          
           <input
             type="text"
             value={directoryPath}
             onChange={(e) => setDirectoryPath(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 "
             placeholder="C:/path/to/your/project"
           />
+
           <Button
             onClick={() => {
               if (isWsConnected && ws !== null) {
@@ -202,6 +204,7 @@ const SelectorSimulations = () => {
             text={t('launch_path')}
             bgColor="bg-green-500"
             showText={true}
+            className='mt-4'
           />
 
 

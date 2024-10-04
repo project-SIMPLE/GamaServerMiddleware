@@ -1,0 +1,10 @@
+{
+    "type": "json_settings",
+    "name": "LinkToUnity",
+    "model_file_path": "./Models/Demo/Simple Player Game/DemoModelVR.gaml",
+    "splashscreen": "learning-packages/demo/splashscreen/demoOne.png",
+    "experiment_name": "vr_xp", 
+    "minimal_players": "1", 
+    "maximal_players": "4", 
+    "selected_monitoring": "gama_screen"
+}
