@@ -34,9 +34,9 @@ class ModelManager {
                     if(useVerbose){
                         console.log("[DEBUG] Append new package to ModelManager : "+folderPath);
                     }
-                    modelList = modelList.concat(
-                        new Model(this.controller, path.join(folderPath,"settings.json"))
-                    );
+                    // Create a new Model
+                    const newModel = new Model(this.controller, path.join(folderPath, "settings.json"));
+                    modelList.push(newModel);             
                 }else{
                     if(useVerbose){
                         console.warn("Couldn't find settings file for folder "+folderPath);

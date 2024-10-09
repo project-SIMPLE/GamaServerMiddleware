@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useWebSocket } from '../WebSocketManager/WebSocketManager';
 
 const SettingsForm: React.FC = () => {
-  const { ws, isWsConnected } = useWebSocket();
+  const { ws, isWsConnected, selectedSimulation } = useWebSocket();
   const [formData, setFormData] = useState({
     ip_address_gama_server: '',
     gama_ws_port: '',
@@ -41,6 +41,23 @@ const SettingsForm: React.FC = () => {
     }
   }, [ws]);
 
+
+  const handleChangeModelPath = (modelFilePathParam:string) => {
+
+    if (ws) {
+
+      // console.log("ModelFilePathParam:", modelFilePathParam);
+      console.log("The default simulation is selected", selectedSimulation); // pas besoin dans 
+
+      ws.send(JSON.stringify({ type: 'settings_change_model_file_path', modelFilePath: modelFilePathParam}));
+      
+      // Not necessary according to me to restart 
+      // ws.send(JSON.stringify({ type: 'restart'}));
+    }
+
+  };
+
+
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
@@ -72,35 +89,8 @@ const SettingsForm: React.FC = () => {
       <h1 className="text-2xl font-bold mb-6">Gama Server Middleware</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">About GAMA Server</h2>
-          <div>
-            <label htmlFor="ip-address-gama-server" className="block text-gray-700">
-              IP address
-            </label>
-            <input
-              type="text"
-              id="ip-address-gama-server"
-              name="ip_address_gama_server"
-              value={formData.ip_address_gama_server}
-              onChange={handleChange}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="gama-ws-port" className="block text-gray-700">
-              WebSocket port
-            </label>
-            <input
-              type="number"
-              id="gama-ws-port"
-              name="gama_ws_port"
-              value={formData.gama_ws_port}
-              onChange={handleChange}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
+          <h2 className="text-xl font-semibold">Settings: </h2>
+          
           <div>
             <label htmlFor="model-file-path" className="block text-gray-700">
               Model file path
@@ -146,109 +136,20 @@ const SettingsForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">About Players</h2>
-          <div>
-            <label htmlFor="player-ws-port" className="block text-gray-700">
-              Player WebSocket port
-            </label>
-            <input
-              type="number"
-              id="player-ws-port"
-              name="player_ws_port"
-              value={formData.player_ws_port}
-              onChange={handleChange}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="player-web-interface"
-              name="player_web_interface"
-              checked={formData.player_web_interface}
-              onChange={handleChange}
-              className="mr-2"
-            />
-            <label htmlFor="player-web-interface" className="text-gray-700">
-              Player web interface
-            </label>
-          </div>
-
-          <div>
-            <label
-              htmlFor="player-html-file"
-              className={`block text-gray-700 ${!formData.player_web_interface ? 'text-gray-400' : ''}`}
-            >
-              Player HTML file (in /player directory)
-            </label>
-            <input
-              type="text"
-              id="player-html-file"
-              name="player_html_file"
-              value={formData.player_html_file}
-              onChange={handleChange}
-              disabled={!formData.player_web_interface}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">About Monitor</h2>
-          <div>
-            <label htmlFor="monitor-ws-port" className="block text-gray-700">
-              Monitor WebSocket port
-            </label>
-            <input
-              type="number"
-              id="monitor-ws-port"
-              name="monitor_ws_port"
-              value={formData.monitor_ws_port}
-              onChange={handleChange}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="app-port" className="block text-gray-700">
-              Application port
-            </label>
-            <input
-              type="number"
-              id="app-port"
-              name="app_port"
-              value={formData.app_port}
-              onChange={handleChange}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Other</h2>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="enable-verbose"
-              name="enable_verbose"
-              checked={formData.enable_verbose}
-              onChange={handleChange}
-              className="mr-2"
-            />
-            <label htmlFor="enable-verbose" className="text-gray-700">
-              Enable verbose in log messages
-            </label>
-          </div>
-        </div>
-
         <div className="flex justify-end">
           <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">
             Save changes & Restart
           </button>
         </div>
       </form>
+      
+      <button
+        onClick={() => handleChangeModelPath(formData.model_file_path)}
+        className='bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 mt-4'
+      >
+        Change Model Path 
+      </button>
+
     </div>
   );
 };

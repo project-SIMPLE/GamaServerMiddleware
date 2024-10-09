@@ -30,6 +30,17 @@ class Controller {
         this.monitor_server = new MonitorServer(this);  
     }
 
+
+    setChoosedLearningPackageIndex(index){
+        this.gama_connector.setModelNewLearningPackageIndex = index;
+        this.choosedLearningPackageIndex = index;
+        // console.log("Simulation List: ", this.getSimulationInformations());
+    }
+
+    getChoosedLearningPackageIndex () {
+        return this.choosedLearningPackageIndex;
+    }
+
     /**
      * Changes the json_settings, then restart the player server, the gama connector, the monitor server
      * @param {JSON} json_settings - The new json

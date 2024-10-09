@@ -111,9 +111,17 @@ class Model {
     }
 
     setPlayerInGame(idPlayer, inGame) {
-        this.jsonPlayers[idPlayer].in_game = inGame
-        this.controller.notifyPlayerChange(idPlayer, this.jsonPlayers[idPlayer])
-        this.controller.notifyMonitor()
+        // Verify if idPlayer exists in jsonPlayers, if not, initialize it
+        if (!this.jsonPlayers[idPlayer]) {
+            this.jsonPlayers[idPlayer] = {};
+        }
+    
+        // Set the in_game property
+        this.jsonPlayers[idPlayer].in_game = inGame;
+    
+        // Notify controller about changes
+        this.controller.notifyPlayerChange(idPlayer, this.jsonPlayers[idPlayer]);
+        this.controller.notifyMonitor();
     }
 
     setRemoveInGameEveryPlayers() {

@@ -9,6 +9,7 @@ import SelectorSimulations from './components/SelectorSimulations/SelectorSimula
 import WebSocketManager from './components/WebSocketManager/WebSocketManager';
 import StreamPlayerScreen from './components/StreamPlayerScreen/StreamPlayerScreen';
 import TestMonitoringScreen from './components/TestMonitoringScreen/TestMonitoringScreen';
+import ParameterSettings from './components/ParameterSettings/ParameterSettings';
 import './i18next/i18n';
 
 
@@ -23,6 +24,8 @@ const App: React.FC = () => {
                     <Route path="simulationManager" element={<SimulationManager />} />
                     <Route path="streamPlayerScreen" element={ <StreamPlayerScreen /> } />
                     <Route path="TestMonitoringScreen" element={ <TestMonitoringScreen /> } />
+                    <Route path="ParameterSettings" element={ <ParameterSettings /> } />
+
                 </Routes>
               </ScreenModeProvider>
             </WebSocketManager>

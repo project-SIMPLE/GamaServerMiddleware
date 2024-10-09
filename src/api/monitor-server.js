@@ -3,6 +3,10 @@ import { WebSocketServer } from 'ws';
 /**
  * Creates a Websocket Server for handling monitor connections
  */
+
+// Declare a global variable for index
+let globalIndex = null;
+
 class MonitorServer {
     /**
      * Creates the websocket server
@@ -35,8 +39,16 @@ class MonitorServer {
                     const type = jsonMonitor['type'];
                     switch (type) {
                         case "launch_experiment":
-                            this.controller.launchExperiment();
+
+                            if (globalIndex !== null && globalIndex >= 0 && globalIndex < this.controller.modelManager.getModelList().length) {
+                                
+                                this.controller.setChoosedLearningPackageIndex(globalIndex); 
+                                this.controller.launchExperiment();
+                            } else {
+                                console.error("Invalid index for launching experiment");
+                            }
                             break;
+                            
                         case "stop_experiment":
                             this.controller.stopExperiment();
                             break;
@@ -58,6 +70,10 @@ class MonitorServer {
                         case "add_player_headset":
                             this.controller.addInGamePlayer(jsonMonitor["id"]);
                             break;
+                        case "restart":
+                            this.controller.restart();
+                            break;
+                            
                         case "remove_player_headset":
                             // remove the player from the simulation
                             this.controller.removeInGamePlayer(jsonMonitor["id"]);
@@ -79,17 +95,46 @@ class MonitorServer {
                             // send to the Web socket Manager
                             socket.send(this.controller.getSimulationInformations());
                             break;
+
+                        case "settings_change_model_file_path":
+
+                            const modelList = this.controller.modelManager.getModelList();
+                            let selectedSimulation = null; // useless
+
+                            modelList.forEach((model, idx) => {
+
+                                // Take the model_file_path from the message 
+                                const modelFilePathNew = jsonMonitor['modelFilePath'];  
+
+                                // Do the modification for the simulation "SimulationLaunchedManually"
+                                if (model.jsonSettings.name === "SimulationLaunchedManually") {
+                                    selectedSimulation = modelList[idx]; // useless not used 
+
+                                    model.modelFilePath = modelFilePathNew;
+                                    model.jsonSettings.model_file_path = modelFilePathNew;
+                                    
+                                }
+                            });
+                            break;
+
+                        //  get simulation par index PUIS actions comme start simulation 
                         case "get_simulation_by_index":
-                            const index = jsonMonitor['simulationIndex'];  // Extract the index from the received message
+                            globalIndex = jsonMonitor['simulationIndex'];  // Extract the index from the received message
                             
-                            if (index !== undefined && index >= 0 && index < this.controller.modelManager.getModelList().length) {
+                            if (globalIndex !== undefined && globalIndex >= 0 && globalIndex < this.controller.modelManager.getModelList().length) {
+                                
+                                // change value of choosedLearningPackageIndex" in the controller 
+                                this.controller.setChoosedLearningPackageIndex(globalIndex); 
+                                
                                 // Retrieve the simulation based on the index
-                                const selectedSimulation = this.controller.modelManager.getModelList()[index]; 
+                                const selectedSimulation = this.controller.modelManager.getModelList()[globalIndex]; 
+
+                                // For retrieving data from the simulation, send a message to the monitor
                                 socket.send(JSON.stringify({ 
                                     type: "get_simulation_by_index", 
                                     simulation: selectedSimulation.getJsonSettings() // Assuming getJsonSettings returns the relevant data
                                 }));
-
+                                
                             } else {
                                 console.error("Invalid index received or out of bounds");
                             }

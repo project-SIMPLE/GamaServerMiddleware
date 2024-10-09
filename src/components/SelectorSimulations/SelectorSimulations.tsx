@@ -6,6 +6,7 @@ import Navigation from '../Navigation/Navigation';
 import VRHeadset from '../VRHeadset/VRHeadset';
 import LanguageSelector from '../LanguageSelector/LanguageSelector';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const SelectorSimulations = () => {
   const { ws, isWsConnected, simulationList, playerList, gama } = useWebSocket();
@@ -14,6 +15,21 @@ const SelectorSimulations = () => {
   const [showCustomInput, setShowCustomInput] = useState<boolean>(false); 
   const [connectionStatus, setConnectionStatus] = useState<string>('Waiting for connection ...'); 
   const {t} = useTranslation();
+  const [indexSimulationCustom, setIndexSimulationCustom] = useState<number>(-1);
+
+  const [formData, setFormData] = useState({
+    ip_address_gama_server: '',
+    gama_ws_port: '',
+    model_file_path: '',
+    model_file_path_type: 'Absolute',
+    experiment_name: '',
+    player_ws_port: '',
+    player_web_interface: false,
+    player_html_file: '',
+    monitor_ws_port: '',
+    app_port: '',
+    enable_verbose: false,
+  });
 
 
   const navigate = useNavigate(); 
@@ -33,13 +49,24 @@ const SelectorSimulations = () => {
 
   const handleSimulation = (index: number) => {
     if (isWsConnected && ws !== null) {
+      // console.log("INDEX: ",index);
       ws.send(JSON.stringify({ type: 'get_simulation_by_index', simulationIndex: index }));
+      
       setTimeout(() => {
         navigate('/simulationManager');
       }, 100); 
     } else {
       console.error('WebSocket is not connected');
     }
+  };
+
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const handleRemove = (index: number) => {
@@ -55,6 +82,29 @@ const SelectorSimulations = () => {
     // Logic for restart button ...
   };
 
+
+  // In the dev mode, we can change the model path 
+  const handleChangeModelPath = (modelFilePathParam:string) => {
+    if (ws) {
+      // console.log("ModelFilePathParam:", modelFilePathParam);
+      // console.log("The default simulation is selected", selectedSimulation); // not nescessary
+
+      ws.send(JSON.stringify({ type: 'settings_change_model_file_path', modelFilePath: modelFilePathParam}));
+      
+
+      // ws.send(JSON.stringify({ type: 'get_simulation_by_index', simulationIndex: index }));
+
+
+      setTimeout(() => {
+        navigate('/simulationManager');
+      }, 100); 
+
+
+      // Not necessary according to me to restart 
+      // ws.send(JSON.stringify({ type: 'restart'}));
+    }
+
+  };
 
   // Loop which try to connect to Gama
   useEffect(() => {
@@ -100,8 +150,12 @@ const SelectorSimulations = () => {
         <div className="flex items-center justify-between ">
           
           <div className="grid grid-cols-3 mt-5 mb-8" style={{ gap: '55px' }}>
+            
+            
             {simulationList.map((simulation, index) => (
-              <div
+             
+              
+             <div
               className={`bg-white shadow-lg rounded-3xl p-6 flex flex-col items-center h-40 cursor-pointer ${
                 !gama.connected ? 'opacity-50 cursor-not-allowed' : ''
               }`}                
@@ -180,32 +234,43 @@ const SelectorSimulations = () => {
       {/* Show hidden sections*/}
       {showCustomInput && (
         
-        // Section: path to start a simulation
+        // Section: path to start a custom simulation
         <div className="mt-4 w-full" style={{ marginTop: '20px', marginBottom: '-25px' }} >
           
           <h1 className="text-lg font-bold mb-4"> {t('enter_path')} </h1> 
-          
-          <input
-            type="text"
-            value={directoryPath}
-            onChange={(e) => setDirectoryPath(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 "
-            placeholder="C:/path/to/your/project"
-          />
 
+        {/* New form for change the model file path  */}
+        <div>
+            <label htmlFor="model-file-path" className="block text-gray-700">
+              Model file path
+            </label>
+            <input
+              type="text"
+              id="model-file-path"
+              name="model_file_path"
+              value={formData.model_file_path}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+        {/* <Link to="/simulationManager" className="text-white hover:text-gray-400"> */}
+          <button
+            onClick={() => handleChangeModelPath(formData.model_file_path)}
+            className='bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300 mt-4'
+          >
+            Change Model Path 
+          </button>
+        {/* </Link> */}
+
+        <h1 className="text-lg font-bold mb-4"> Change simulation path</h1> 
+
+        <Link to="/ParameterSettings" className="text-white hover:text-gray-400">
           <Button
-            onClick={() => {
-              if (isWsConnected && ws !== null) {
-                ws.send(JSON.stringify({ type: 'get_simulation_informations' }));
-              } else {
-                console.error('WebSocket is not connected');
-              }
-            }}
-            text={t('launch_path')}
-            bgColor="bg-green-500"
-            showText={true}
-            className='mt-4'
+            bgColor='bg-green-500'
+            text='Change path'
           />
+        </Link>
 
 
         {/* // Section: Get simulation informations */}
@@ -301,13 +366,9 @@ const SelectorSimulations = () => {
             </div>
           </>
         )}
-
-
       </div>
         
       )}
-
-      
 
       {/* Footer of the page */}
       <footer className="flex justify-between items-center p-4 border-t border-gray-300  w-full" style={{ marginTop: '100px' }} >

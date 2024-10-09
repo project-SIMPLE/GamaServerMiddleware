@@ -34,6 +34,7 @@ class GamaConnector {
     constructor(controller) {
         this.controller = controller;
         this.model = this.controller.modelManager.getModelList()[this.controller.choosedLearningPackageIndex];
+        // console.log("selected index 3 : ", this.controller.modelManager.getModelList()[this.controller.choosedLearningPackageIndex]);
         this.gama_socket = this.connectGama();
     }
 
@@ -46,9 +47,13 @@ class GamaConnector {
     jsonLoadExperiment = () => {
         return {
         "type": "load",
-        "model": this.model.getModelFilePath(),
+        //"model": this.model.getModelFilePath(), // instead of it call long method 
+        "model": this.controller.modelManager.getModelList()[this.controller.choosedLearningPackageIndex].getModelFilePath(),
         "experiment": this.model.getExperimentName()
         }
+    }
+    setModelNewLearningPackageIndex = (index) => {
+        this.model = this.controller.modelManager.getModelList()[index];
     }
 
     /**

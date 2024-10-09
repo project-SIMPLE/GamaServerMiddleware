@@ -109,10 +109,13 @@ const WebSocketManager: React.FC<WebSocketManagerProps> = ({ children }) => {
         socket.onmessage = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             
-
+            
+            // if send message type : "json_simulation_list" then we will set the simulation list
             if (Array.isArray(data) && data.every(d => d.type === 'json_simulation_list')) {
                 setSimulationList(data.map(sim => sim.jsonSettings));
                 console.log('[WebSocketManager] Simulation list:', data);
+    
+    
             } else {
                 // console.log("Just the list of players :", playerList); // should show list of players 
                 switch (data.type) {
@@ -122,8 +125,10 @@ const WebSocketManager: React.FC<WebSocketManagerProps> = ({ children }) => {
                         // console.log('Liste des playeyrs', data.player);
                         setPlayerList(data.player);
                         break;
-
-
+                    case 'change_settings_parameters':
+                        break;
+                    case 'get_parameter_simulation':
+                        break;  
                     case 'json_settings':
                         break;
                     case 'get_simulation_by_index':
